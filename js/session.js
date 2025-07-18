@@ -238,7 +238,7 @@ function storeSessionExpiry(timeInSeconds) {
 
     } else {
 
-        let timeInMilliseconds = (timeInSeconds * 1000) + (new Date.getTime());
+        let timeInMilliseconds = (timeInSeconds * 1000) + (new Date).getTime();
         localStorage.setItem("spotifyApiExpiry", JSON.stringify(timeInMilliseconds));
 
     }
