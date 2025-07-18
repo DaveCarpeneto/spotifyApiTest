@@ -20,19 +20,6 @@ $( document ).ready(function() {
 
     }
 
-
-
-    /*
-
-    if (checkUrlForAuthCode()) {
-        
-        window.location.assign(location.protocol + '//' + location.host + location.pathname) // to strip out the credentials from the URL
-
-    }
-
- 
-    */
-
 });
 
 // return true if the user auth is all good
@@ -249,7 +236,7 @@ function sessionIsNotExpired() {
 
     let expiryTime = localStorage.getItem("spotifyApiExpiry");
 
-    return expiryTime != null &&  JSON.parse(expiryTime) > (new Date.getTime());
+    return expiryTime != null &&  JSON.parse(expiryTime) > (new Date).getTime();
 
 }
 
