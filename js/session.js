@@ -152,7 +152,7 @@ async function presentLogin() {
     // stuff we need to know about
     const clientId = '004b4a3922474b05bd21e17a25df5de0';
     const redirectUri = 'https://davecarpeneto.github.io/spotifyApiTest';
-    const scope = 'playlist-read-private playlist-read-collaborative user-read-private user-read-email';
+    const scope = 'user-library-read playlist-read-private playlist-read-collaborative user-read-private user-read-email';
     const authUrl = new URL("https://accounts.spotify.com/authorize");
 
     const formHtml = `<form action=${authUrl}>
