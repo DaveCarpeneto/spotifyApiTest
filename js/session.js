@@ -109,9 +109,6 @@ $.ajax({
 // pop the login button up on the page
 async function presentLogin() {
 
-    // clear out any code we may have stored
-    storeSessionCode(null);
-
     // generate code_challenge & state 
     const codeVerifier  = generateRandomString(64);
     const hashed = await hashString(codeVerifier)
@@ -144,26 +141,6 @@ async function presentLogin() {
 function liveItUp() {
 
     $("#main").html("IT WORKS");
-
-}
-
-function storeSessionCode(code) {
-
-    if (code == null) {
-
-        localStorage.removeItem("spotifyApiCode");
-
-    } else {
-
-        localStorage.setItem("spotifyApiCode", code);
-
-    }
-
-}
-
-function getSessionCode() {
-
-    return localStorage.getItem("spotifyApiCode");
 
 }
 
