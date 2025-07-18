@@ -175,6 +175,30 @@ function liveItUp() {
 
     $("#main").html("IT WORKS");
 
+    $.ajax({
+
+    type: "GET",
+
+    url: "https://api.spotify.com/v1/me/playlists", 
+
+    headers: {
+        'Authorization': `Bearer ${getSessionToken()}`
+    },
+
+    success: function(result, status, xhr){
+
+        console.log(result);
+    },
+
+    error: function(result, status, xhr){
+
+        console.error(result);
+
+    }
+
+})
+
+
 }
 
 function storeSessionState(state) {
