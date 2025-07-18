@@ -179,7 +179,7 @@ function liveItUp() {
 
     type: "GET",
 
-    url: "https://api.spotify.com/v1/me/playlists", 
+    url: "https://api.spotify.com/v1/me/tracks", 
 
     headers: {
         'Authorization': `Bearer ${getSessionToken()}`
