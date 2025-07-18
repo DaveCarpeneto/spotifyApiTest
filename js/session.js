@@ -90,7 +90,10 @@ $.ajax({
 
     success: function(result, status, xhr){
 
-        console.log(result);
+        storeSessionToken(result['access_token']);
+        storeSessionRefreshToken(result['refresh_token']);
+        storeSessionExpiry(result['expires_in']);
+        window.location.assign(location.protocol + '//' + location.host + location.pathname) // to strip out the credentials from the URL
 
     },
 
@@ -115,6 +118,9 @@ async function presentLogin() {
     const codeChallenge = base64encode(hashed);
     storeSessionState(codeChallenge);
     storeSessionVerifier(codeVerifier);
+    storeSessionToken(null);
+    storeSessionRefreshToken(null);
+    storeSessionExpiry(null);
 
     // stuff we need to know about
     const clientId = '004b4a3922474b05bd21e17a25df5de0';
