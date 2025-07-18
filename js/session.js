@@ -51,6 +51,48 @@ function authCodeInUrl() {
 // TODO
 function refreshToken() {
 
+    if (getSessionRefreshToken() == null) {
+
+        // TODO - error
+        presentLogin();
+
+    }
+
+    $.ajax({
+
+    async: false, 
+
+    type: "POST",
+
+    url: "https://accounts.spotify.com/api/token", 
+
+    data: {
+        'grant_type': 'refresh_token',
+        'refresh_token': getSessionRefreshToken(),
+        'client_id': '004b4a3922474b05bd21e17a25df5de0'
+    },
+
+    headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    },
+
+    success: function(result, status, xhr){
+
+        storeSessionToken(result['access_token']);
+        storeSessionRefreshToken(result['refresh_token']);
+        storeSessionExpiry(result['expires_in']);
+        window.location.assign(location.protocol + '//' + location.host + location.pathname) // to strip out the credentials from the URL
+
+    },
+
+    error: function(result, status, xhr){
+
+        console.error(result);
+
+    }
+
+    });
+
 }
 
 // returns true if we got an auth code in the URL
@@ -93,8 +135,6 @@ $.ajax({
 });
 
 }
-
-
 
 // pop the login button up on the page
 async function presentLogin() {
