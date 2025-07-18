@@ -119,7 +119,7 @@ function storeSessionCode(code) {
 
 function storeSessionState(state) {
 
-    if (code == null) {
+    if (state == null) {
 
         localStorage.removeItem("spotifyApiState");
 
