@@ -111,9 +111,9 @@ function storeSessionCode(code) {
 
     } else {
 
-     localStorage.setItem("spotifyApiCode", code);
+        localStorage.setItem("spotifyApiCode", code);
 
-   }
+    }
 
 }
 
@@ -125,21 +125,21 @@ function storeSessionState(state) {
 
     } else {
 
-     localStorage.setItem("spotifyApiState", state);
+        localStorage.setItem("spotifyApiState", state);
 
-   }
+    }
 
 }
 
 function getSessionCode() {
 
-    localStorage.getItem("spotifyApiCode");
+    return localStorage.getItem("spotifyApiCode");
 
 }
 
 function getSessionState() {
 
-    localStorage.getItem("spotifyApiState");
+    return localStorage.getItem("spotifyApiState");
 
 }
 
