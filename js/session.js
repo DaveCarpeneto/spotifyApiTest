@@ -78,7 +78,7 @@ async function presentLogin() {
 
     // stuff we need to know about
     const clientId = '004b4a3922474b05bd21e17a25df5de0';
-    const redirectUri = 'http://localhost:2441/';
+    const redirectUri = 'https://davecarpeneto.github.io/spotifyApiTest';
     const scope = 'user-read-private user-read-email';
     const authUrl = new URL("https://accounts.spotify.com/authorize");
 
