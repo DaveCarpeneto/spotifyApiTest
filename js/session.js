@@ -20,6 +20,8 @@ $( document ).ready(function() {
 
 });
 
+// test
+
 // returns true if we got login info in the URL
 function checkForURLParams() {
 
