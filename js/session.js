@@ -2,71 +2,111 @@ $( document ).ready(function() {
 
     console.log( "ready!" );
 
-    if (checkForURLParams()) {
-        
-        window.location.assign("/") // to strip out the credentials from the URL
+    if (authenticated()) {
 
-    }
+        liveItUp();
 
-    if (!isLoggedIn()) {
+    } else if (expired()) {
 
-        presentLogin();
+        refreshToken();
+
+    } else if (authCodeInUrl()) {
+
+        authenticateWithCode();
 
     } else {
 
-        liveItUp();
+        presentLogin();
+
+    }
+
+
+
+    /*
+
+    if (checkUrlForAuthCode()) {
+        
+        window.location.assign(location.protocol + '//' + location.host + location.pathname) // to strip out the credentials from the URL
+
+    }
+
+ 
+    */
+
+});
+
+// return true if the user auth is all good
+function authenticated() {
+
+    return getSessionToken() != null && sessionIsNotExpired();
+
+}
+
+// return true if the user auth is all good
+function expired() {
+
+    return getSessionToken() != null && !(sessionIsNotExpired());
+
+}
+
+// return true if it looks like we have auth codes in our URL
+function authCodeInUrl() {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let code = urlParams.get('code');
+    let state = urlParams.get('state');
+    let error = urlParams.get('error');
+
+    return error == null && code != null && state != null && state == getSessionState();
+
+}
+
+// TODO
+function refreshToken() {
+
+}
+
+// returns true if we got an auth code in the URL
+function authenticateWithCode() {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    let code = urlParams.get('code');
+
+$.ajax({
+
+    async: false, 
+
+    type: "POST",
+
+    url: "https://accounts.spotify.com/api/token", 
+
+    data: {
+        'grant_type': 'authorization_code',
+        'code': code,
+        'redirect_uri': 'https://davecarpeneto.github.io/spotifyApiTest',
+        'client_id': '004b4a3922474b05bd21e17a25df5de0',
+        'code_verifier': getSessionVerifier()
+    },
+
+    success: function(result, status, xhr){
+
+        console.log(result);
+
+    },
+
+    error: function(result, status, xhr){
+
+        console.error(result);
 
     }
 
 });
 
-// test
-
-// returns true if we got login info in the URL
-function checkForURLParams() {
-
-    const urlParams = new URLSearchParams(window.location.search);
-    let code = urlParams.get('code');
-    let error = urlParams.get('error');
-    let state = urlParams.get('state');
-
-    if (code == null && state == null) { //} && state == getSessionState()) {
-
-        return false; // nothing in the URL 
-        
-    } 
-
-    if (state == null || getSessionState() == null || state != getSessionState()) {
-
-        console.error(`Stored state: ${getSessionState()} \n Returned state: ${state}`);
-        return false; // TODO: I gotta handle weirdness better ... 
-        
-    }
-
-    if (error != null) {
-
-        console.error(`Erro: ${error}`);
-        return false; // TODO: I gotta handle weirdness better ...        
-    }
-
-    if (code == null) {
-
-        console.error(`Code is null`);
-         return false; // TODO: I gotta handle weirdness better ... 
-      
-    }
-
-    storeSessionCode(code);
-    return true;
-
 }
 
-function isLoggedIn() {
 
-    return getSessionCode() != null;
 
-}
-
+// pop the login button up on the page
 async function presentLogin() {
 
     // clear out any code we may have stored
@@ -77,11 +117,12 @@ async function presentLogin() {
     const hashed = await hashString(codeVerifier)
     const codeChallenge = base64encode(hashed);
     storeSessionState(codeChallenge);
+    storeSessionVerifier(codeVerifier);
 
     // stuff we need to know about
     const clientId = '004b4a3922474b05bd21e17a25df5de0';
     const redirectUri = 'https://davecarpeneto.github.io/spotifyApiTest';
-    const scope = 'user-read-private user-read-email';
+    const scope = 'playlist-read-private playlist-read-collaborative user-read-private user-read-email';
     const authUrl = new URL("https://accounts.spotify.com/authorize");
 
     const formHtml = `<form action=${authUrl}>
@@ -99,6 +140,7 @@ async function presentLogin() {
 
 }
 
+// TODO:
 function liveItUp() {
 
     $("#main").html("IT WORKS");
@@ -119,6 +161,12 @@ function storeSessionCode(code) {
 
 }
 
+function getSessionCode() {
+
+    return localStorage.getItem("spotifyApiCode");
+
+}
+
 function storeSessionState(state) {
 
     if (state == null) {
@@ -133,15 +181,92 @@ function storeSessionState(state) {
 
 }
 
-function getSessionCode() {
-
-    return localStorage.getItem("spotifyApiCode");
-
-}
-
 function getSessionState() {
 
     return localStorage.getItem("spotifyApiState");
+
+}
+
+function storeSessionVerifier(verifier) {
+
+    if (verifier == null) {
+
+        localStorage.removeItem("spotifyApiVerifier");
+
+    } else {
+
+        localStorage.setItem("spotifyApiVerifier", verifier);
+
+    }
+
+}
+
+function getSessionVerifier() {
+
+    return localStorage.getItem("spotifyApiVerifier");
+
+}
+
+function storeSessionToken(token) {
+
+    if (token == null) {
+
+        localStorage.removeItem("spotifyApiToken");
+
+    } else {
+
+        localStorage.setItem("spotifyApiToken", token);
+
+    }
+
+}
+
+function getSessionToken() {
+
+    return localStorage.getItem("spotifyApiToken");
+
+}
+
+function storeSessionRefreshToken(token) {
+
+    if (token == null) {
+
+        localStorage.removeItem("spotifyApiRefreshToken");
+
+    } else {
+
+        localStorage.setItem("spotifyApiRefreshToken", token);
+
+    }
+
+}
+
+function getSessionRefreshToken() {
+
+    return localStorage.getItem("spotifyApiRefreshToken");
+
+}
+
+function storeSessionExpiry(timeInSeconds) {
+
+    if (timeInSeconds == null) {
+
+        localStorage.removeItem("spotifyApiExpiry");
+
+    } else {
+
+        let timeInMilliseconds = (timeInSeconds * 1000) + (new Date.getTime());
+        localStorage.setItem("spotifyApiExpiry", JSON.stringify(timeInMilliseconds));
+
+    }
+
+}
+
+function sessionIsNotExpired() {
+
+    let expiryTime = localStorage.getItem("spotifyApiExpiry");
+
+    return expiryTime != null &&  JSON.parse(expiryTime) > (new Date.getTime());
 
 }
 
